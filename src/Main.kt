@@ -40,15 +40,15 @@ class Board(val me: Me, val others: List<Player>) {
         }
     }
 
-    fun useSecretInformant(card: Card) {
-        me.possibleCardsOnFace.remove(card)
+    fun useSecretInformant(cards: Set<Card>) {
+        me.possibleCardsOnFace.removeAll(cards)
         others.forEach {
-            it.possibleCardsOnHand.remove(card)
+            it.possibleCardsOnHand.removeAll(cards)
         }
     }
 
-    fun playerAccuse(player: Player, card: Card) {
-        player.possibleCardsOnHand.remove(card)
+    fun playerAccuse(player: Player, cards: Set<Card>) {
+        player.possibleCardsOnHand.removeAll(cards)
     }
 
     fun playerSees(player: Player, attribute: Attribute, count: Int) {
@@ -99,23 +99,12 @@ fun main(args: Array<String>) {
     val Christina = board.others[1]
 
     // SI
-    board.useSecretInformant(Knife)
-    board.useSecretInformant(Countess)
-    board.useSecretInformant(Market)
-    board.useSecretInformant(Poison)
-    board.useSecretInformant(Park)
-    board.useSecretInformant(Harbor)
+    board.useSecretInformant(setOf(Knife, Countess, Market, Poison, Park, Harbor))
 
     // Accuse
-    board.playerAccuse(Christina, Dancer)
-    board.playerAccuse(Christina, Theater)
-    board.playerAccuse(Christina, Crossbow)
-    board.playerAccuse(Peggy, Duke)
-    board.playerAccuse(Peggy, Library)
-    board.playerAccuse(Peggy, Sword)
-    board.playerAccuse(Christina, Officer)
-    board.playerAccuse(Christina, Theater)
-    board.playerAccuse(Christina, Gun)
+    board.playerAccuse(Christina, setOf(Dancer, Theater, Crossbow))
+    board.playerAccuse(Peggy, setOf(Duke, Library, Sword))
+    board.playerAccuse(Peggy, setOf(Officer, Theater, Gun))
 
     // Question
     board.playerSees(Peggy, Category.Person.MALE, 2)
