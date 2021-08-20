@@ -40,6 +40,17 @@ class Board(val me: Me, val others: List<Player>) {
         }
     }
 
+    fun useSecretInformant(card: Card) {
+        me.possibleCardsOnFace.remove(card)
+        others.forEach {
+            it.possibleCardsOnHand.remove(card)
+        }
+    }
+
+    fun playerAccuse(player: Player, card: Card) {
+        player.possibleCardsOnHand.remove(card)
+    }
+
     fun playerSees(player: Player, attribute: Attribute, count: Int) {
         // Compare that with cards I've seen, except my secret hands and the opponent face cards
         val whatISee = others.cards()
@@ -76,17 +87,53 @@ class Board(val me: Me, val others: List<Player>) {
 
 fun main(args: Array<String>) {
     val board = Board(
-        me = Me(cardsOnHand = setOf(Dancer, Knife)),
+        me = Me(cardsOnHand = setOf(Dancer, Rifle)),
         others = listOf(
-            Player(setOf(Officer, Harbor, Blowgun)),
-            Player(cards = setOf(Nurse, Theater, Poison))
+            Player(cards = setOf(Maid, Library, Sword)),
+            Player(cards = setOf(Officer, Theater, Crossbow))
         )
     )
 
     // Question time
-    board.playerSees(board.others[0], Category.Person.FEMALE, 1)
-    board.playerSees(board.others[1], Category.Location.OUTDOOR, 2)
-    board.playerSees(board.others[1], Color.GREEN, 1)
+    val Peggy = board.others[0]
+    val Christina = board.others[1]
+
+    // SI
+    board.useSecretInformant(Knife)
+    board.useSecretInformant(Countess)
+    board.useSecretInformant(Market)
+    board.useSecretInformant(Poison)
+    board.useSecretInformant(Park)
+    board.useSecretInformant(Harbor)
+
+    // Accuse
+    board.playerAccuse(Christina, Dancer)
+    board.playerAccuse(Christina, Theater)
+    board.playerAccuse(Christina, Crossbow)
+    board.playerAccuse(Peggy, Duke)
+    board.playerAccuse(Peggy, Library)
+    board.playerAccuse(Peggy, Sword)
+    board.playerAccuse(Christina, Officer)
+    board.playerAccuse(Christina, Theater)
+    board.playerAccuse(Christina, Gun)
+
+    // Question
+    board.playerSees(Peggy, Category.Person.MALE, 2)
+    board.playerSees(Christina, Color.PURPLE, 1)
+    board.playerSees(Christina, Color.YELLOW, 2)
+    board.playerSees(Christina, Category.Weapon.CLOSED, 2)
+    board.playerSees(Peggy, Color.PINK, 1)
+    board.playerSees(Christina, Color.RED, 2)
+    board.playerSees(Peggy, Color.ORANGE, 2)
+    board.playerSees(Christina, Color.PINK, 1)
+    board.playerSees(Peggy, Color.BLUE, 0)
+    board.playerSees(Christina, Color.GREEN, 1)
+    board.playerSees(Christina, Color.RED, 2)
+    board.playerSees(Peggy, Color.RED, 1)
+    board.playerSees(Christina, Category.Weapon.RANGED, 1)
+    board.playerSees(Christina, Category.Person.MALE, 2)
+    board.playerSees(Peggy, Category.Person.MALE, 2)
+    board.playerSees(Peggy, Color.YELLOW, 2)
 
     // Print state
     board.printBoardState()
